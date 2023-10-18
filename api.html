@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Personajes de Rick and Morty</title>
+</head>
+<body>
+    <h1>Personajes de Rick and Morty</h1>
+    <button id="anterior">Anterior</button>
+      <button id="siguiente">Siguiente</button>
+    <div id="personajes">
+      
+        <!-- Los datos de los personajes se mostrarán aquí -->
+    </div>
+    <footer id="footer">
+
+    </footer>
+    <script>
+        // URL de la API
+        var paginaActual = 1;
+        var apiUrl = "https://rickandmortyapi.com/api/character/?page=";
+        // Función para crear elementos HTML y mostrar los datos de un personaje
+        function mostrarPersonaje(personaje) {
+            const personajeDiv = document.createElement("div");
+            personajeDiv.classList.add("personaje");
+            
+            const imagen = document.createElement("img");
+            imagen.src = personaje.image;
+
+            const nombre = document.createElement("p");
+            nombre.textContent = `Nombre: ${personaje.name}`;
+
+            const id = document.createElement("p");
+            id.textContent = `Nombre: ${personaje.id}`;
+
+            const estado = document.createElement("p");
+            estado.textContent = `Estado: ${personaje.status}`;
+
+            const especie = document.createElement("p");
+            especie.textContent = `Especie: ${personaje.species}`;
+
+            const tipo = document.createElement("p");
+            tipo.textContent = `Tipo: ${personaje.type || 'N/A'}`;
+
+            const genero = document.createElement("p");
+            genero.textContent = `Género: ${personaje.gender}`;
+
+            const origen = document.createElement("p");
+            origen.textContent = `Origen: ${personaje.origin.name}`;
+
+            const ubicacion = document.createElement("p");
+            ubicacion.textContent = `Ubicación: ${personaje.location.name}`;
+
+            personajeDiv.appendChild(imagen);
+            personajeDiv.appendChild(nombre);
+            personajeDiv.appendChild(id);
+            personajeDiv.appendChild(estado);
+            personajeDiv.appendChild(especie);
+            personajeDiv.appendChild(tipo);
+            personajeDiv.appendChild(genero);
+            personajeDiv.appendChild(origen);
+            personajeDiv.appendChild(ubicacion);
+
+            return personajeDiv;
+        }
+
+        // Realizar una solicitud GET a la API
+        function cargarDatos(url) {
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error al obtener los datos de la API");
+                }
+                return response.json();
+            })
+            .then(data => {
+                const personajesDiv = document.getElementById("personajes");
+                 while (personajesDiv.firstChild) {
+                personajesDiv.removeChild(personajesDiv.firstChild);
+                }
+                const footerDiv = document.getElementById("footer");
+                 while (footerDiv.firstChild) {
+                    footerDiv.removeChild(footerDiv.firstChild);
+                }
+                const personajes = data.results;
+                for (i=1; i <data.info.pages ; i++) { 
+                  const btn = document.createElement("button");
+                  btn.textContent = i;
+                  btn.id=i;    
+                  
+                    document.getElementById('footer').appendChild(btn);
+                    btn.addEventListener("click",()=>{
+                    paginaActual=btn.id;
+                    newapiUrl=apiUrl+paginaActual;
+                    cargarDatos(newapiUrl);
+                  })
+            }
+
+                personajes.forEach(personaje => {
+                    const personajeDiv = mostrarPersonaje(personaje);
+                    personajesDiv.appendChild(personajeDiv);
+                });
+            })
+            .catch(error => {
+                console.error("Error: " + error.message);
+            });
+          }
+
+          function click_here(button_id)
+    {
+        console.log("id:"+ button_id);
+    }
+          function boton() {
+            console.log("gola")
+          }
+            // Agregar evento al botón "Anterior"
+        document.getElementById("anterior").addEventListener("click", () => {
+          if(paginaActual>1){
+              paginaActual--;
+              newapiUrl=apiUrl+paginaActual;
+                cargarDatos(newapiUrl);}
+            
+        });
+
+        // Agregar evento al botón "Siguiente"
+        document.getElementById("siguiente").addEventListener("click", () => {
+
+          paginaActual++;
+           newapiUrl=apiUrl+paginaActual;
+
+            cargarDatos(newapiUrl);
+        });
+        
+
+        // Cargar los datos iniciales
+        cargarDatos(apiUrl + paginaActual);
+    </script>
+
+    <style>
+        .personaje {
+            border: 1px solid #ccc;
+            margin: 10px;
+            padding: 10px;
+            display: inline-block;
+        }
+        img {
+            max-width: 100%;
+        }
+    </style>
+</body>
+</html>
